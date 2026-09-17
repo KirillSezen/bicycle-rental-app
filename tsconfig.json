@@ -24,5 +24,7 @@
     "noFallthroughCasesInSwitch": false,
     "types": ["jest", "node"],
     "rootDir": "./src"
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "prisma7.config.ts"]
 }

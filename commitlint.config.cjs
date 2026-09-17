@@ -1,7 +1,9 @@
 module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
-    'type-enum': [ 2, 'always',
+    'type-enum': [
+      2,
+      'always',
       [
         'feat',
         'fix',
@@ -13,13 +15,13 @@ module.exports = {
         'chore',
         'ci',
         'build',
-        'revert'
-      ]
+        'revert',
+      ],
     ],
     'type-case': [2, 'always', 'lower-case'],
     'type-empty': [2, 'never'],
     'subject-empty': [2, 'never'],
     'subject-full-stop': [2, 'never', '.'],
-    'header-max-length': [2, 'always', 100]
-  }
+    'header-max-length': [2, 'always', 100],
+  },
 };
