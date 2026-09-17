@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat    = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+   id           String   @id @default(uuid())
+   username     String   @unique
+   email        String   @unique
+   passwordHash String
+   role         Role     @default(User)
+   rentals      Rental[]
+}
+
+model Bicycle {
+  id           String        @id @default(uuid())
+  model        String
+  location     String
+  status       BicycleStatus
+  pricePerHour Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  rentals      Rental[]
+
+  @@index([status])
+  @@index([location])
+}
+
+model Rental {
+  id        String       @id @default(uuid())
+  user      User         @relation(fields: [userId], references: [id])
+  userId    String       
+  bicycle   Bicycle      @relation(fields: [bicycleId], references: [id])
+  bicycleId String       
+  startTime DateTime
+  endTime   DateTime?
+  status    RentalStatus
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  review    Review?
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rental    Rental   @relation(fields: [rentalId], references: [id])
+  rentalId  String   @unique
+  rating    Int      
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  Admin
+  User
+}
+
+enum BicycleStatus {
+  Available
+  Rented
+  Archive
+}
+
+enum RentalStatus {
+  Active
+  Completed
+  Close
+}
