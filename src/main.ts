@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { BadRequestException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function start(): Promise<void> {
   const PORT = process.env.PORT || 5000;
@@ -25,6 +26,14 @@ async function start(): Promise<void> {
       transform: true,
     }),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('Bicycle Rental App')
+    .setDescription('Документация приложения')
+    .setVersion('0.0.1')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('/docs', app, document);
 
   await app.listen(PORT, () => console.log(`Server started at ${PORT}`));
 }
