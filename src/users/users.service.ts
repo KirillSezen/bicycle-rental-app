@@ -49,6 +49,12 @@ export class UsersService {
       throw new NotFoundException('Пользователя с таким id не существует');
     }
 
+    if (dto.password) {
+      const { password, ...rest } = dto;
+      const passwordHash = await bcrypt.hash(password, 10);
+      return this.userRepo.update(id, { ...rest, passwordHash });
+    }
+
     return this.userRepo.update(id, dto);
   }
 
