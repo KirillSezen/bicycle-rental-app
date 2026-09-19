@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,7 +14,7 @@ export class UsersService {
 
   async getUserById(id: string) {
     const user = await this.userRepo.findById(id);
-    if (!user) throw new NotFoundException('Пользователь не найден');
+    if (!user) throw new NotFoundException('Пользователя с таким id не существует');
 
     return user;
   }
@@ -23,9 +23,9 @@ export class UsersService {
     const candidate = await this.userRepo.findByEmailOrUsername(dto.email, dto.username);
     if (candidate) {
       if (candidate.email === dto.email) {
-        throw new BadRequestException('Пользователь с таким email уже существует');
+        throw new ConflictException('Пользователь с таким email уже существует');
       }
-      throw new BadRequestException('Пользователь с таким username уже существует');
+      throw new ConflictException('Пользователь с таким username уже существует');
     }
 
     const { password, ...rest } = dto;
@@ -37,7 +37,7 @@ export class UsersService {
   async updateUser(id: string, dto: UpdateUserDto) {
     const user = await this.userRepo.findById(id);
     if (!user) {
-      throw new BadRequestException('Пользователя с таким id не существует');
+      throw new NotFoundException('Пользователя с таким id не существует');
     }
 
     return this.userRepo.update(id, dto);
@@ -46,7 +46,7 @@ export class UsersService {
   async removeUser(id: string) {
     const user = await this.userRepo.findById(id);
     if (!user) {
-      throw new BadRequestException('Пользователя с таким id не существует');
+      throw new NotFoundException('Пользователя с таким id не существует');
     }
 
     return this.userRepo.remove(id);
