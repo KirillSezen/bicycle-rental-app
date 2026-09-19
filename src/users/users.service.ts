@@ -19,6 +19,15 @@ export class UsersService {
     return user;
   }
 
+  async getUserByEmailOrUsername(dto: CreateUserDto) {
+    const user = await this.userRepo.findByEmailOrUsername(dto.email, dto.username);
+    if (!user) {
+      throw new NotFoundException('Пользователя с таким email или username не существует');
+    }
+
+    return user;
+  }
+
   async createUser(dto: CreateUserDto) {
     const candidate = await this.userRepo.findByEmailOrUsername(dto.email, dto.username);
     if (candidate) {
