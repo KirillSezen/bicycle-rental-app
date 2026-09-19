@@ -9,12 +9,13 @@ datasource db {
 }
 
 model User {
-   id           String   @id @default(uuid())
-   username     String   @unique
-   email        String   @unique
-   passwordHash String
-   role         Role     @default(User)
-   rentals      Rental[]
+   id            String         @id @default(uuid())
+   username      String         @unique
+   email         String         @unique
+   passwordHash  String
+   role          Role           @default(User)
+   rentals       Rental[]
+   refreshTokens RefreshToken[]
 }
 
 model Bicycle {
@@ -33,7 +34,7 @@ model Bicycle {
 
 model Rental {
   id        String       @id @default(uuid())
-  user      User         @relation(fields: [userId], references: [id])
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String       
   bicycle   Bicycle      @relation(fields: [bicycleId], references: [id])
   bicycleId String       
@@ -50,12 +51,25 @@ model Rental {
 
 model Review {
   id        String   @id @default(uuid())
-  rental    Rental   @relation(fields: [rentalId], references: [id])
+  rental    Rental   @relation(fields: [rentalId], references: [id], onDelete: Cascade)
   rentalId  String   @unique
   rating    Int      
   comment   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model RefreshToken{
+  id        String    @id
+  tokenHash String 
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
 }
 
 enum Role {
