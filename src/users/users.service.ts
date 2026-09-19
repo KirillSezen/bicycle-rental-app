@@ -24,15 +24,14 @@ export class UsersService {
     if (candidate) {
       if (candidate.email === dto.email) {
         throw new BadRequestException('Пользователь с таким email уже существует');
-      } else {
-        throw new BadRequestException('Пользователь с таким username уже существует');
       }
+      throw new BadRequestException('Пользователь с таким username уже существует');
     }
 
-    const passwordHash = await bcrypt.hash(dto.passwordHash, 10);
-    const user = await this.userRepo.create({ ...dto, passwordHash });
+    const { password, ...rest } = dto;
+    const passwordHash = await bcrypt.hash(password, 10);
 
-    return user;
+    return this.userRepo.create({ ...rest, passwordHash });
   }
 
   async updateUser(id: string, dto: UpdateUserDto) {
@@ -41,9 +40,7 @@ export class UsersService {
       throw new BadRequestException('Пользователя с таким id не существует');
     }
 
-    const result = await this.userRepo.update(id, dto);
-
-    return result;
+    return this.userRepo.update(id, dto);
   }
 
   async removeUser(id: string) {
@@ -52,8 +49,6 @@ export class UsersService {
       throw new BadRequestException('Пользователя с таким id не существует');
     }
 
-    const result = await this.userRepo.remove(id);
-
-    return result;
+    return this.userRepo.remove(id);
   }
 }
