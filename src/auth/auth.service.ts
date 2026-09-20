@@ -7,6 +7,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRepository } from './auth.repository';
 import type { AuthUser, RefreshToken } from './types/auth.types';
+import { Role } from 'src/generated/prisma/enums';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +23,7 @@ export class AuthService {
   }
 
   async login(user: AuthUser) {
-    return this.generateTokens(user.id, user.email);
+    return this.generateTokens(user.id, user.email, user.username, user.role);
   }
 
   async validateUser(email: string, password: string) {
@@ -51,17 +52,17 @@ export class AuthService {
     const candidate = await this.usersService.getUserById(user.userId);
     if (!candidate) throw new UnauthorizedException();
 
-    return this.generateTokens(candidate.id, candidate.email);
+    return this.generateTokens(candidate.id, candidate.email, candidate.username, candidate.role);
   }
 
-  private async generateTokens(userId: string, email: string) {
+  private async generateTokens(userId: string, email: string, username: string, role: Role) {
     const accessTtl = Number(this.configService.getOrThrow<number>('JWT_ACCESS_TTL'));
     const refreshTtl = Number(this.configService.getOrThrow<number>('JWT_REFRESH_TTL'));
     const jti = randomUUID();
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
-        { sub: userId, email },
+        { sub: userId, email, username, role },
         {
           secret: this.configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
           expiresIn: accessTtl,
