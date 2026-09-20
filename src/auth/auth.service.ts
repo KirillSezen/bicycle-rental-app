@@ -35,8 +35,8 @@ export class AuthService {
   }
 
   private async generateTokens(userId: string, email: string) {
-    const accessTtl = this.configService.getOrThrow<number>('JWT_ACCESS_TTL');
-    const refreshTtl = this.configService.getOrThrow<number>('JWT_REFRESH_TTL');
+    const accessTtl = Number(this.configService.getOrThrow<number>('JWT_ACCESS_TTL'));
+    const refreshTtl = Number(this.configService.getOrThrow<number>('JWT_REFRESH_TTL'));
     const jti = randomUUID();
 
     const [accessToken, refreshToken] = await Promise.all([
