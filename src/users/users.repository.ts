@@ -30,6 +30,10 @@ export class UsersRepository {
     });
   }
 
+  findByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({ where: { email } });
+  }
+
   create(data: Prisma.UserCreateInput): Promise<UserWithoutPassword> {
     return this.prisma.user.create({ data, select: this.select });
   }
