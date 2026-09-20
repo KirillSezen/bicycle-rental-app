@@ -12,3 +12,7 @@ export interface AuthUser {
   username: string;
   role: Role;
 }
+
+export interface RequestWithUser extends Request {
+  user: AuthUser;
+}
