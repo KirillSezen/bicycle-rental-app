@@ -1,12 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { Role } from 'src/generated/prisma/enums';
-
-export interface AuthUser {
-  id: string;
-  email: string;
-  username: string;
-  role: Role;
-}
+import { AuthUser } from '../types/auth.types';
 
 interface RequestWithUser extends Request {
   user: AuthUser;

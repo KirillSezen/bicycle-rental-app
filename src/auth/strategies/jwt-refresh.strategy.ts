@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
 
 export interface RefreshPayload {
-  sub: number;
+  sub: string;
   jti: string;
 }
 
