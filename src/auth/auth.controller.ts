@@ -6,17 +6,27 @@ import { Public } from './decorators/public.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import type { AuthUser, RefreshToken } from './types/auth.types';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { UserResponseDto } from 'src/users/dto/response-user.dto';
+import { TokenResponseDto } from './dto/tokens-response.dto';
+import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Регистрация пользователя' })
+  @ApiResponse({ status: 201, type: UserResponseDto })
   @Public()
   @Post('registration')
   registration(@Body() dto: RegisterDto) {
     return this.authService.registration(dto);
   }
 
+  @ApiOperation({ summary: 'Логин пользователя' })
+  @ApiResponse({ status: 200, type: TokenResponseDto })
+  @ApiBody({ type: LoginDto })
   @Public()
   @UseGuards(LocalAuthGuard)
   @HttpCode(200)
@@ -25,6 +35,9 @@ export class AuthController {
     return this.authService.login(user);
   }
 
+  @ApiOperation({ summary: 'Выход пользователя' })
+  @ApiResponse({ status: 204 })
+  @ApiBody({ type: RefreshTokenDto })
   @Public()
   @UseGuards(JwtRefreshGuard)
   @HttpCode(204)
@@ -33,6 +46,9 @@ export class AuthController {
     return this.authService.logout(user);
   }
 
+  @ApiOperation({ summary: 'Обновление токена' })
+  @ApiResponse({ status: 200, type: TokenResponseDto })
+  @ApiBody({ type: RefreshTokenDto })
   @Public()
   @UseGuards(JwtRefreshGuard)
   @HttpCode(200)
