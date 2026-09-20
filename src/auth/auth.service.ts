@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRepository } from './auth.repository';
+import { type AuthUser } from './decorators/current-user.decorator';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,7 @@ export class AuthService {
     return this.usersService.createUser(dto);
   }
 
-  async login(user: { id: string; email: string }) {
+  async login(user: AuthUser) {
     return this.generateTokens(user.id, user.email);
   }
 
