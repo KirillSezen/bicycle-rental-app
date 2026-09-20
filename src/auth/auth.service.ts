@@ -11,6 +11,10 @@ export class AuthService {
     return this.usersService.createUser(dto);
   }
 
+  async login(user: { email: string }) {
+    return this.usersService.getUserByEmail(user.email);
+  }
+
   async validateUser(email: string, password: string) {
     const user = await this.usersService.getUserByEmail(email);
     if (!user) return null;
