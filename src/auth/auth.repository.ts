@@ -22,4 +22,17 @@ export class AuthRepository {
       },
     });
   }
+
+  revokeRefreshTokens(jti: string) {
+    return this.prisma.refreshToken.updateMany({
+      where: { id: jti, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+  }
+
+  findRefreshTokenByJti(jti: string): Promise<RefreshToken | null> {
+    return this.prisma.refreshToken.findUnique({
+      where: { id: jti },
+    });
+  }
 }
