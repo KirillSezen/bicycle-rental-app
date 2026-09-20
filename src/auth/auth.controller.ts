@@ -29,7 +29,15 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @HttpCode(204)
   @Post('logout')
-  async logout(@CurrentUser() user: RefreshToken) {
-    await this.authService.logout(user);
+  logout(@CurrentUser() user: RefreshToken) {
+    return this.authService.logout(user);
+  }
+
+  @Public()
+  @UseGuards(JwtRefreshGuard)
+  @HttpCode(200)
+  @Post('refresh')
+  refresh(@CurrentUser() user: RefreshToken) {
+    return this.authService.refresh(user);
   }
 }

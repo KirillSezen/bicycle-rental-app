@@ -39,7 +39,19 @@ export class AuthService {
     await this.assertActiveRefreshToken(user.jti, user.refreshToken);
     await this.authRepository.revokeRefreshTokens(user.jti);
 
-    return 'successful logged out';
+    return { message: 'successful logged out' };
+  }
+
+  async refresh(user: RefreshToken) {
+    await this.assertActiveRefreshToken(user.jti, user.refreshToken);
+
+    const { count } = await this.authRepository.revokeRefreshTokens(user.jti);
+    if (count === 0) throw new UnauthorizedException('Refresh-токен отозван');
+
+    const candidate = await this.usersService.getUserById(user.userId);
+    if (!candidate) throw new UnauthorizedException();
+
+    return this.generateTokens(candidate.id, candidate.email);
   }
 
   private async generateTokens(userId: string, email: string) {
