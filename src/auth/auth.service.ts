@@ -23,7 +23,7 @@ export class AuthService {
   }
 
   async login(user: AuthUser) {
-    return this.generateTokens(user.id, user.email, user.username, user.role);
+    return this.generateTokens(user.userId, user.email, user.username, user.role);
   }
 
   async validateUser(email: string, password: string) {

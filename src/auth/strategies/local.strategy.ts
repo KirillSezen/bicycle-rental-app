@@ -15,6 +15,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Неверный email или пароль');
     }
 
-    return user;
+    const { id: userId, ...rest } = user;
+    return { ...rest, userId };
   }
 }

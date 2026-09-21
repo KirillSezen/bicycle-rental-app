@@ -7,7 +7,7 @@ export interface RefreshToken {
 }
 
 export interface AuthUser {
-  id: string;
+  userId: string;
   email: string;
   username: string;
   role: Role;
