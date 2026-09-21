@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Bicycle } from 'src/generated/prisma/client';
+import { Bicycle, Prisma } from 'src/generated/prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -12,5 +12,17 @@ export class BicyclesRepository {
 
   findById(id: string): Promise<Bicycle | null> {
     return this.prisma.bicycle.findUnique({ where: { id } });
+  }
+
+  create(data: Prisma.BicycleCreateInput): Promise<Bicycle> {
+    return this.prisma.bicycle.create({ data });
+  }
+
+  update(id: string, data: Prisma.BicycleUpdateInput): Promise<Bicycle> {
+    return this.prisma.bicycle.update({ where: { id }, data });
+  }
+
+  remove(id: string): Promise<Bicycle> {
+    return this.prisma.bicycle.delete({ where: { id } });
   }
 }
