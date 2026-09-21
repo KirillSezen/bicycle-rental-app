@@ -9,10 +9,12 @@ export class CreateBicycleDto {
 
   @IsString({ message: 'Должно быть строкой' })
   @IsNotEmpty({ message: 'Не должно быть пустым' })
-  @Length(4, 20, { message: 'Не меньше 4 и не больше 50' })
+  @Length(4, 50, { message: 'Не меньше 4 и не больше 50' })
   declare location: string;
 
-  @IsEnum(BicycleStatus, { message: 'Некорректное значение role' })
+  @IsEnum(BicycleStatus, {
+    message: 'Некорректное значение status, доступные значения Available, Rented, Archive',
+  })
   @IsOptional()
   status?: BicycleStatus;
 
