@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { BicyclesRepository } from './bicycles.repository';
 import { CreateBicycleDto } from './dto/create-bicycle.dto';
 import { UpdateBicycleDto } from './dto/update-bicycle.dto';
 import { BicyclesQueryDto } from './dto/bicycles-query.dto';
-import { Role } from 'src/generated/prisma/enums';
+import { BicycleStatus, Role } from 'src/generated/prisma/enums';
 
 @Injectable()
 export class BicyclesService {
@@ -40,5 +40,22 @@ export class BicyclesService {
     }
 
     return this.bicycleRepo.remove(id);
+  }
+
+  async archiveBicycle(id: string) {
+    const bicycle = await this.bicycleRepo.findByIdForAdmin(id);
+    if (!bicycle) {
+      throw new NotFoundException('Велосипеда с таким id не существует');
+    }
+
+    if (bicycle.status !== BicycleStatus.Available) {
+      const message =
+        bicycle.status === BicycleStatus.Archive
+          ? 'Данный велосипед уже в архиве'
+          : 'Данный велосипед уже арендован';
+      throw new ConflictException(message);
+    }
+
+    return this.bicycleRepo.archive(id);
   }
 }

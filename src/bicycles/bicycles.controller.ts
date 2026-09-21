@@ -40,4 +40,10 @@ export class BicyclesController {
   remove(@Param('id') id: string) {
     return this.bicyclesService.removeBicycle(id);
   }
+
+  @Roles(Role.Admin)
+  @Patch(':id/archive')
+  archive(@Param('id') id: string) {
+    return this.bicyclesService.archiveBicycle(id);
+  }
 }

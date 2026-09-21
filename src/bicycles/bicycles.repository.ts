@@ -66,6 +66,13 @@ export class BicyclesRepository {
     return this.prisma.bicycle.delete({ where: { id } });
   }
 
+  archive(id: string): Promise<Bicycle> {
+    return this.prisma.bicycle.update({
+      where: { id, status: BicycleStatus.Available },
+      data: { status: BicycleStatus.Archive },
+    });
+  }
+
   setupWhereAndOrderBy(query: BicyclesQueryDto, role: Role) {
     const where: Prisma.BicycleWhereInput = {
       model: query.model ? { contains: query.model, mode: 'insensitive' } : undefined,
