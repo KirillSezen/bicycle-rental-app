@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { BicycleStatus, Prisma, Rental, RentalStatus } from 'src/generated/prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RentalsQueryDto } from './dto/rentals-query.dto';
+import { BatchPayload } from 'src/generated/prisma/internal/prismaNamespace';
 
 export interface RentalWithBicycle extends Rental {
   bicycle: {
@@ -43,6 +44,20 @@ export class RentalsRepository {
 
   findById(id: string) {
     return this.prisma.rental.findUnique({ where: { id } });
+  }
+
+  finish(id: string, now: Date): Promise<BatchPayload> {
+    return this.prisma.rental.updateMany({
+      where: { id, status: RentalStatus.Active },
+      data: { status: RentalStatus.Completed, endTime: now },
+    });
+  }
+
+  close(id: string): Promise<BatchPayload> {
+    return this.prisma.rental.updateMany({
+      where: { id, status: RentalStatus.Completed },
+      data: { status: RentalStatus.Close },
+    });
   }
 
   async findMany(query: RentalsQueryDto, userId: string): Promise<SortedRentals> {

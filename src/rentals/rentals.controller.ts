@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { CreateRentalDto } from './dto/create-rental.dto';
 import { RentalsService } from './rentals.service';
@@ -24,5 +24,17 @@ export class RentalsController {
   @Get(':id')
   findOne(@CurrentUser('userId') userId: string, @Param('id') id: string) {
     return this.rentalsService.findOneOwn(userId, id);
+  }
+
+  @Post(':id/finish')
+  @HttpCode(200)
+  finish(@CurrentUser('userId') userId: string, @Param('id') id: string) {
+    return this.rentalsService.finish(userId, id);
+  }
+
+  @Post(':id/close')
+  @HttpCode(200)
+  close(@CurrentUser('userId') userId: string, @Param('id') id: string) {
+    return this.rentalsService.close(userId, id);
   }
 }

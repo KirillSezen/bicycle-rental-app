@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -37,6 +38,31 @@ export class RentalsService {
 
   findOneOwn(userId: string, id: string) {
     return this.getOwn(userId, id);
+  }
+
+  async finish(userId: string, id: string) {
+    const rental = await this.getOwn(userId, id);
+
+    const now = new Date();
+    if (now <= rental.startTime) {
+      throw new ConflictException('Аренда ещё не началась');
+    }
+
+    const { count } = await this.rentalsRepo.finish(id, now);
+    if (count === 0) throw new ConflictException('Аренда уже завершена');
+
+    return rental;
+  }
+
+  async close(userId: string, id: string) {
+    const rental = await this.getOwn(userId, id);
+
+    const { count } = await this.rentalsRepo.close(id);
+    if (count === 0) {
+      throw new ConflictException('Закрыть можно только завершённую аренду');
+    }
+
+    return rental;
   }
 
   private async getOwn(userId: string, id: string) {
