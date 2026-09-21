@@ -2,17 +2,19 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { BicyclesRepository } from './bicycles.repository';
 import { CreateBicycleDto } from './dto/create-bicycle.dto';
 import { UpdateBicycleDto } from './dto/update-bicycle.dto';
+import { BicyclesQueryDto } from './dto/bicycles-query.dto';
+import { Role } from 'src/generated/prisma/enums';
 
 @Injectable()
 export class BicyclesService {
   constructor(private bicycleRepo: BicyclesRepository) {}
 
-  async findBicycles() {
-    return this.bicycleRepo.findMany();
+  async findBicycles(query: BicyclesQueryDto, role: Role) {
+    return this.bicycleRepo.findMany(query, role);
   }
 
-  async findBicycleById(id: string) {
-    const bicycle = await this.bicycleRepo.findById(id);
+  async findBicycleById(id: string, role: Role) {
+    const bicycle = await this.bicycleRepo.findByIdForUser(id, role);
     if (!bicycle) throw new NotFoundException('Велосипеда с таким id не существует');
 
     return bicycle;
@@ -23,7 +25,7 @@ export class BicyclesService {
   }
 
   async updateBicycle(id: string, dto: UpdateBicycleDto) {
-    const bicycle = await this.bicycleRepo.findById(id);
+    const bicycle = await this.bicycleRepo.findByIdForAdmin(id);
     if (!bicycle) {
       throw new NotFoundException('Велосипеда с таким id не существует');
     }
@@ -32,7 +34,7 @@ export class BicyclesService {
   }
 
   async removeBicycle(id: string) {
-    const bicycle = await this.bicycleRepo.findById(id);
+    const bicycle = await this.bicycleRepo.findByIdForAdmin(id);
     if (!bicycle) {
       throw new NotFoundException('Велосипеда с таким id не существует');
     }

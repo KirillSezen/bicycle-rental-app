@@ -1,22 +1,25 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
 import { BicyclesService } from './bicycles.service';
 import { CreateBicycleDto } from './dto/create-bicycle.dto';
 import { UpdateBicycleDto } from './dto/update-bicycle.dto';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/generated/prisma/enums';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { BicyclesQueryDto } from './dto/bicycles-query.dto';
 
+@Roles(Role.Admin, Role.User)
 @Controller('bicycles')
 export class BicyclesController {
   constructor(private readonly bicyclesService: BicyclesService) {}
 
   @Get()
-  findAll() {
-    return this.bicyclesService.findBicycles();
+  findAll(@Query() query: BicyclesQueryDto, @CurrentUser('role') role: Role) {
+    return this.bicyclesService.findBicycles(query, role);
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
-    return this.bicyclesService.findBicycleById(id);
+  findById(@Param('id') id: string, @CurrentUser('role') role: Role) {
+    return this.bicyclesService.findBicycleById(id, role);
   }
 
   @Roles(Role.Admin)
