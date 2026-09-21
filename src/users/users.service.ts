@@ -14,18 +14,18 @@ import { Role } from 'src/generated/prisma/enums';
 export class UsersService {
   constructor(private userRepo: UsersRepository) {}
 
-  async getUsers() {
+  async findUsers() {
     return this.userRepo.findMany();
   }
 
-  async getUserById(id: string) {
+  async findUserById(id: string) {
     const user = await this.userRepo.findById(id);
     if (!user) throw new NotFoundException('Пользователя с таким id не существует');
 
     return user;
   }
 
-  async getUserByEmail(email: string) {
+  async findUserByEmail(email: string) {
     const user = await this.userRepo.findByEmail(email);
     if (!user) {
       return;
