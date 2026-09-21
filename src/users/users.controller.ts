@@ -4,7 +4,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/response-user.dto';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/generated/prisma/enums';
 
+@Roles(Role.Admin)
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
