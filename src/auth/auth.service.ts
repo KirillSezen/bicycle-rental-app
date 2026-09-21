@@ -23,11 +23,11 @@ export class AuthService {
   }
 
   async login(user: AuthUser) {
-    return this.generateTokens(user.id, user.email, user.username, user.role);
+    return this.generateTokens(user.userId, user.email, user.username, user.role);
   }
 
   async validateUser(email: string, password: string) {
-    const user = await this.usersService.getUserByEmail(email);
+    const user = await this.usersService.findUserByEmail(email);
     if (!user) return null;
 
     const compareResult = await bcrypt.compare(password, user.passwordHash);
@@ -49,7 +49,7 @@ export class AuthService {
     const { count } = await this.authRepository.revokeRefreshTokens(user.jti);
     if (count === 0) throw new UnauthorizedException('Refresh-токен отозван');
 
-    const candidate = await this.usersService.getUserById(user.userId);
+    const candidate = await this.usersService.findUserById(user.userId);
     if (!candidate) throw new UnauthorizedException('Вы не авторизованны');
 
     return this.generateTokens(candidate.id, candidate.email, candidate.username, candidate.role);

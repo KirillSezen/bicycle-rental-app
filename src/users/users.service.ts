@@ -1,25 +1,31 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { Role } from 'src/generated/prisma/enums';
 
 @Injectable()
 export class UsersService {
   constructor(private userRepo: UsersRepository) {}
 
-  async getUsers() {
+  async findUsers() {
     return this.userRepo.findMany();
   }
 
-  async getUserById(id: string) {
+  async findUserById(id: string) {
     const user = await this.userRepo.findById(id);
     if (!user) throw new NotFoundException('Пользователя с таким id не существует');
 
     return user;
   }
 
-  async getUserByEmail(email: string) {
+  async findUserByEmail(email: string) {
     const user = await this.userRepo.findByEmail(email);
     if (!user) {
       return;
@@ -65,5 +71,16 @@ export class UsersService {
     }
 
     return this.userRepo.remove(id);
+  }
+
+  async setRole(userid: string, id: string, role: Role) {
+    const candidate = await this.userRepo.findById(id);
+    if (!candidate) {
+      throw new NotFoundException('Пользователя с таким id не существует');
+    }
+
+    if (id === userid) throw new ForbiddenException('Нельзя изменить собственную роль');
+    const [user] = await this.userRepo.setupRole(id, role);
+    return user;
   }
 }
