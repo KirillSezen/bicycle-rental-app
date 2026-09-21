@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, User } from 'src/generated/prisma/client';
+import { Prisma, Role, User } from 'src/generated/prisma/client';
+import { BatchPayload } from 'src/generated/prisma/internal/prismaNamespace';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 type UserWithoutPassword = Omit<User, 'passwordHash'>;
@@ -44,5 +45,19 @@ export class UsersRepository {
 
   remove(id: string): Promise<UserWithoutPassword> {
     return this.prisma.user.delete({ where: { id }, select: this.select });
+  }
+
+  setupRole(id: string, role: Role): Promise<[UserWithoutPassword, BatchPayload]> {
+    return this.prisma.$transaction([
+      this.prisma.user.update({ where: { id }, data: { role }, select: this.select }),
+      this.revokeRefreshTokens(id),
+    ]);
+  }
+
+  revokeRefreshTokens(id: string) {
+    return this.prisma.refreshToken.updateMany({
+      where: { userId: id, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
   }
 }

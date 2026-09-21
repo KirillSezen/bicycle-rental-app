@@ -6,6 +6,8 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/response-user.dto';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/generated/prisma/enums';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { UpdateRoleDto } from './dto/update-role.dto';
 
 @Roles(Role.Admin)
 @Controller('users')
@@ -45,5 +47,16 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.removeUser(id);
+  }
+
+  @ApiOperation({ summary: 'Смена роли пользователя' })
+  @ApiResponse({ status: 200, type: UserResponseDto })
+  @Patch(':id/role')
+  setRole(
+    @CurrentUser('userId') userId: string,
+    @Param('id') id: string,
+    @Body() dto: UpdateRoleDto,
+  ) {
+    return this.userService.setRole(userId, id, dto.role);
   }
 }
