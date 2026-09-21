@@ -50,7 +50,7 @@ export class AuthService {
     if (count === 0) throw new UnauthorizedException('Refresh-токен отозван');
 
     const candidate = await this.usersService.getUserById(user.userId);
-    if (!candidate) throw new UnauthorizedException();
+    if (!candidate) throw new UnauthorizedException('Вы не авторизованны');
 
     return this.generateTokens(candidate.id, candidate.email, candidate.username, candidate.role);
   }
