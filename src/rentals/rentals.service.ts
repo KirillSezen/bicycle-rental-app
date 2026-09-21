@@ -1,6 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateRentalDto } from './dto/create-rental.dto';
 import { RentalsRepository } from './rentals.repository';
+import { RentalsQueryDto } from './dto/rentals-query.dto';
 
 const START_TOLERANCE_MS = 60_000;
 
@@ -19,5 +25,25 @@ export class RentalsService {
     }
 
     return this.rentalsRepo.create(bicycleId, userId, startTime, endTime);
+  }
+
+  async findAllOwn(userId: string, query: RentalsQueryDto) {
+    if (query.dateFrom && query.dateTo && query.dateFrom > query.dateTo) {
+      throw new BadRequestException('dateFrom не может быть позже dateTo');
+    }
+
+    return this.rentalsRepo.findMany(query, userId);
+  }
+
+  findOneOwn(userId: string, id: string) {
+    return this.getOwn(userId, id);
+  }
+
+  private async getOwn(userId: string, id: string) {
+    const rental = await this.rentalsRepo.findById(id);
+    if (!rental) throw new NotFoundException('Аренды с таким id не существует');
+    if (rental.userId !== userId) throw new ForbiddenException('Это не ваша аренда');
+
+    return rental;
   }
 }
