@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -25,9 +25,9 @@ export class ReviewsService {
     if (!rental) throw new NotFoundException('Аренды с таким id не существует');
     if (rental.userId !== userId) throw new ForbiddenException('Это не ваша аренда');
     if (!REVIEWABLE_STATUSES.includes(rental.status)) {
-      throw new BadRequestException('Отзыв можно оставить только по завершённой аренде');
+      throw new ConflictException('Отзыв можно оставить только по завершённой аренде');
     }
-    if (rental.review) throw new BadRequestException('Отзыв можно оставить только один раз');
+    if (rental.review) throw new ConflictException('Отзыв можно оставить только один раз');
 
     return this.reviewsRepository.create(rental.id, dto.rating, dto.comment);
   }
