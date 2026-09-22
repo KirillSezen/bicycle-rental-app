@@ -27,6 +27,7 @@ export class ReviewsService {
     if (!REVIEWABLE_STATUSES.includes(rental.status)) {
       throw new BadRequestException('Отзыв можно оставить только по завершённой аренде');
     }
+    if (rental.review) throw new BadRequestException('Отзыв можно оставить только один раз');
 
     return this.reviewsRepository.create(rental.id, dto.rating, dto.comment);
   }

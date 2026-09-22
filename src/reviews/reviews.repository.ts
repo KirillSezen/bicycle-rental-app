@@ -13,6 +13,10 @@ export interface SortedReviews {
   };
 }
 
+export interface RentalWithReview extends Rental {
+  review: Review | null;
+}
+
 @Injectable()
 export class ReviewsRepository {
   constructor(private prismaService: PrismaService) {}
@@ -31,8 +35,11 @@ export class ReviewsRepository {
     },
   };
 
-  findRentalById(rentalId: string): Promise<Rental | null> {
-    return this.prismaService.rental.findUnique({ where: { id: rentalId } });
+  findRentalById(rentalId: string): Promise<RentalWithReview | null> {
+    return this.prismaService.rental.findUnique({
+      where: { id: rentalId },
+      include: { review: true },
+    });
   }
 
   create(rentalId: string, rating: number, comment: string): Promise<Review> {
