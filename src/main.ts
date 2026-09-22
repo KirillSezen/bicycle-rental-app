@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { BadRequestException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ExceptionsFilter } from './common/exceptions.filter';
 
 async function start(): Promise<void> {
   const PORT = process.env.PORT || 5000;
@@ -26,6 +27,8 @@ async function start(): Promise<void> {
       transform: true,
     }),
   );
+
+  app.useGlobalFilters(new ExceptionsFilter());
 
   const config = new DocumentBuilder()
     .setTitle('Bicycle Rental App')
