@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { Prisma } from 'src/generated/prisma/client';
 import { Request, Response } from 'express';
 
 interface ErrorResponseBody {
@@ -77,11 +78,48 @@ export class ExceptionsFilter implements ExceptionFilter {
       };
     }
 
+    if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      return this.prismaError(exception);
+    }
+
     return {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       error: 'Internal Server Error',
       message: 'Внутренняя ошибка сервера',
       details: null,
     };
+  }
+
+  private prismaError(error: Prisma.PrismaClientKnownRequestError) {
+    switch (error.code) {
+      case 'P2002':
+        return {
+          status: HttpStatus.CONFLICT,
+          error: 'Conflict',
+          message: 'Запись с такими данными уже существует',
+          details: error.meta?.target ?? null,
+        };
+      case 'P2025':
+        return {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Not Found',
+          message: 'Запись не найдена',
+          details: null,
+        };
+      case 'P2003':
+        return {
+          status: HttpStatus.CONFLICT,
+          error: 'Conflict',
+          message: 'Операция нарушает связи с другими записями',
+          details: null,
+        };
+      default:
+        return {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Internal Server Error',
+          message: 'Ошибка базы данных',
+          details: null,
+        };
+    }
   }
 }
