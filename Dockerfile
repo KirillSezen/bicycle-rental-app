@@ -13,9 +13,19 @@ RUN npx prisma generate
 
 RUN npm run build
 
+FROM node:22-alpine AS runtime
+
+WORKDIR /app
+
 ENV NODE_ENV=production
 
+COPY package*.json ./
+COPY prisma ./prisma/
+
 RUN npm ci --omit=dev --ignore-scripts
+
+COPY --from=build /app/src/generated/prisma/ ./src/generated/prisma
+COPY --from=build /app/dist ./dist
 
 EXPOSE 3000
 
