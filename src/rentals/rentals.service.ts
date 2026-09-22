@@ -51,18 +51,18 @@ export class RentalsService {
     const { count } = await this.rentalsRepo.finish(id, now);
     if (count === 0) throw new ConflictException('Аренда уже завершена');
 
-    return rental;
+    return this.getOwn(userId, id);
   }
 
   async close(userId: string, id: string) {
-    const rental = await this.getOwn(userId, id);
+    await this.getOwn(userId, id);
 
     const { count } = await this.rentalsRepo.close(id);
     if (count === 0) {
       throw new ConflictException('Закрыть можно только завершённую аренду');
     }
 
-    return rental;
+    return this.getOwn(userId, id);
   }
 
   private async getOwn(userId: string, id: string) {
