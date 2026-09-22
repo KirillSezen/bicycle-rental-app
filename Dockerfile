@@ -21,6 +21,7 @@ ENV NODE_ENV=production
 
 COPY package*.json ./
 COPY prisma ./prisma/
+COPY prisma7.config.ts ./
 
 RUN npm ci --omit=dev --ignore-scripts
 
