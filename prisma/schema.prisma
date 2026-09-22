@@ -27,6 +27,7 @@ model Bicycle {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   rentals      Rental[]
+  rentalsCount Int           @default(0)
 
   @@index([status])
   @@index([location])
@@ -39,7 +40,7 @@ model Rental {
   bicycle   Bicycle      @relation(fields: [bicycleId], references: [id])
   bicycleId String       
   startTime DateTime
-  endTime   DateTime?
+  endTime   DateTime
   status    RentalStatus @default(Active)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
