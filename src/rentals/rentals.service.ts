@@ -8,15 +8,22 @@ import {
 import { CreateRentalDto } from './dto/create-rental.dto';
 import { RentalsRepository } from './rentals.repository';
 import { RentalsQueryDto } from './dto/rentals-query.dto';
+import { BicyclesService } from 'src/bicycles/bicycles.service';
+import { Role } from 'src/generated/prisma/enums';
 
 const START_TOLERANCE_MS = 60_000;
 
 @Injectable()
 export class RentalsService {
-  constructor(private rentalsRepo: RentalsRepository) {}
+  constructor(
+    private rentalsRepo: RentalsRepository,
+    private bicyclesService: BicyclesService,
+  ) {}
 
-  async create(userId: string, dto: CreateRentalDto) {
+  async create(userId: string, role: Role, dto: CreateRentalDto) {
     const { bicycleId, startTime, endTime } = dto;
+
+    await this.bicyclesService.findBicycleById(bicycleId, role);
 
     if (endTime <= startTime) {
       throw new BadRequestException('endTime должен быть позже startTime');
