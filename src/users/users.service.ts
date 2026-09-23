@@ -64,11 +64,13 @@ export class UsersService {
     return this.userRepo.update(id, dto);
   }
 
-  async removeUser(id: string) {
+  async removeUser(userid: string, id: string) {
     const user = await this.userRepo.findById(id);
     if (!user) {
       throw new NotFoundException('Пользователя с таким id не существует');
     }
+
+    if (id === userid) throw new ForbiddenException('Нельзя удалить самого себя');
 
     return this.userRepo.remove(id);
   }

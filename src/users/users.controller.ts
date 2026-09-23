@@ -45,8 +45,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Удаление пользователя' })
   @ApiResponse({ status: 200, type: UserResponseDto })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.removeUser(id);
+  remove(@CurrentUser('userId') userId: string, @Param('id') id: string) {
+    return this.usersService.removeUser(userId, id);
   }
 
   @ApiOperation({ summary: 'Смена роли пользователя' })
