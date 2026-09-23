@@ -16,8 +16,12 @@ export class RentalsController {
   @ApiOperation({ summary: 'Создание аренды' })
   @ApiResponse({ status: 201, type: RentalResponseDto })
   @Post()
-  create(@CurrentUser('userId') userId: string, @Body() dto: CreateRentalDto) {
-    return this.rentalsService.create(userId, dto);
+  create(
+    @CurrentUser('userId') userId: string,
+    @CurrentUser('role') role: Role,
+    @Body() dto: CreateRentalDto,
+  ) {
+    return this.rentalsService.create(userId, role, dto);
   }
 
   @ApiOperation({ summary: 'Получение всех аренд пользователя' })
