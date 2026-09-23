@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsInt, IsString, Max, MaxLength, Min } from 'class-validator';
+import { IsNotEmpty, IsInt, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 export class CreateReviewDto {
   @ApiProperty({
@@ -26,5 +26,6 @@ export class CreateReviewDto {
   })
   @IsString({ message: 'Должно быть строкой' })
   @MaxLength(350, { message: 'Максимальная длина сообщения 350 символов' })
+  @MinLength(5, { message: 'Минимальная длина сообщения 5 символов' })
   declare comment: string;
 }
