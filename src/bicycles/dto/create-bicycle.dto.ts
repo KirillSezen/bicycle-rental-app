@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, Length, IsEnum, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, Length, IsEnum, IsNumber, IsOptional, Min } from 'class-validator';
 import { BicycleStatus } from 'src/generated/prisma/enums';
 
 export class CreateBicycleDto {
@@ -25,5 +25,6 @@ export class CreateBicycleDto {
   @ApiProperty({ example: 5, description: 'почасовая стоимость аренды велосипеда' })
   @IsNotEmpty({ message: 'Не должно быть пустым' })
   @IsNumber({}, { message: 'Должно быть числом' })
+  @Min(1, { message: 'Ни меньше 1' })
   declare pricePerHour: number;
 }
